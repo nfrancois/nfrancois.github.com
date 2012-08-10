@@ -1,4 +1,5 @@
 #import('dart:html');
+#import('dart:math');
 
 // Original code from : https://github.com/hendo13/HTML5-Matrix-Code-Rain
 
@@ -24,10 +25,12 @@ class Dartrix {
   List<num> _stripX;
   List<num> _stripY;
   List<num> _dY;
-  
+  final Random _randommer;
   int _startTime;
   
-  initStrips(){
+  Dartrix() : _randommer = new Random(); 
+  
+  initStrips() {
     _stripFontSize = new List<num>(_STRIP_NUMBER);
     _stripX = new List<num>(_STRIP_NUMBER);
     _stripY = new List<num>(_STRIP_NUMBER);
@@ -38,10 +41,10 @@ class Dartrix {
   }
   
   initStrip(num i){
-    _stripX[i] = (Math.random()*_width);
+    _stripX[i] = (_randommer.nextDouble()*_width);
     _stripY[i] = -100;
-    _dY[i] = (Math.random()*7)+3;
-    _stripFontSize[i] =  ((Math.random()*24)+12).toInt();   
+    _dY[i] = (_randommer.nextDouble()*7)+3;
+    _stripFontSize[i] = _randommer.nextInt(24) + 12;   
   }
   
   bool draw(int time){
@@ -55,9 +58,9 @@ class Dartrix {
     }
     for(var i=0; i<_STRIP_NUMBER; i++){
       var size = _stripFontSize[i];
-      _ctx.font = '${size}px MatrixCode';
-      _ctx.textBaseline = 'top';
-      _ctx.textAlign = 'center';
+      _ctx..font = '${size}px MatrixCode'
+          ..textBaseline = 'top'
+          ..textAlign = 'center';
       if (_stripY[i] > _height) {
         initStrip(i);
       } else {
@@ -70,43 +73,45 @@ class Dartrix {
   }
   
   clear(){
-    _ctx.clearRect(0, 0, _canvas.width, _canvas.height);
-    _ctx.shadowOffsetX = _ctx.shadowOffsetY = 0;
-    _ctx.shadowBlur = 8;
-    _ctx.shadowColor = '#94f475';
+    _ctx..clearRect(0, 0, _canvas.width, _canvas.height)
+        ..shadowOffsetX = _ctx.shadowOffsetY = 0
+        ..shadowBlur = 8
+        ..shadowColor = '#94f475';
   }
   
   drawStrip(x, y) {
     for (var k = 0; k <= 20; k++) {
-      var randChar = _SYMBOLS[(Math.random()*_SYMBOLS.length).toInt()];
+      var randChar = _SYMBOLS[_randommer.nextInt(_SYMBOLS.length-1)];
+      var color;
       switch (k) {
       case 0:
-        _ctx.fillStyle = _COLORS[0]; break;
+        color = _COLORS[0]; break;
       case 1:
-        _ctx.fillStyle = _COLORS[1]; break;
+        color = _COLORS[1]; break;
       case 3:
-        _ctx.fillStyle = _COLORS[2]; break;
+        color = _COLORS[2]; break;
       case 7:
-        _ctx.fillStyle = _COLORS[3]; break;
+        color = _COLORS[3]; break;
       case 13:
-        _ctx.fillStyle = _COLORS[4]; break;
+        color = _COLORS[4]; break;
       case 17:
-        _ctx.fillStyle = _COLORS[5]; break;
+        color = _COLORS[5]; break;
       }
-      _ctx.fillText(randChar, x, y);
+      _ctx..fillStyle = color
+          ..fillText(randChar, x, y);
       y -= _stripFontSize[k];
      }
   }
   
   showMessage(double alpha){
-    _ctx.font = 'bold 75px Verdana';
-    _ctx.fillStyle = 'rgba(67,199,40, ${alpha})';
-    _ctx.fillText(MESSAGE , _width/2, _height/2-100);
+    _ctx..font = 'bold 75px Verdana'
+        ..fillStyle = 'rgba(67,199,40, ${alpha})'
+        ..fillText(MESSAGE , _width/2, _height/2-100);
   }
 
   onResize() {
-    _canvas.height = _height = window.innerHeight;
-    _canvas.width = _width = _canvas.width = window.innerWidth;
+    _canvas..height = _height = window.innerHeight
+           ..width = _width = _canvas.width = window.innerWidth;
   }  
   
   run(){
@@ -114,8 +119,8 @@ class Dartrix {
     _ctx = _canvas.context2d;
     onResize();
     initStrips();
-    window.on.resize.add((event) => onResize(), true);
-    window.requestAnimationFrame(draw);
+    window..on.resize.add((event) => onResize(), true)
+           ..requestAnimationFrame(draw);
   }
   
 }
