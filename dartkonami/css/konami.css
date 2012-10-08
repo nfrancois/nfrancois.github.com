@@ -1,3 +1,6 @@
+.konami {
+	width: 400px;
+}
 .out {
   visibility: hidden;
   opacity: 0;  
