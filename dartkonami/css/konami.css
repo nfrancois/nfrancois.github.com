@@ -1,0 +1,9 @@
+.a {
+  visibility: hidden;
+}
+
+.b {
+  visibility: visible;
+  -webkit-transition-property: visibility;
+  -webkit-transition-duration: 3s;
+}
