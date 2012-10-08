@@ -1,9 +1,10 @@
-.a {
+.out {
   visibility: hidden;
+  opacity: 0;  
 }
 
-.b {
+.in {
   visibility: visible;
-  -webkit-transition-property: visibility;
-  -webkit-transition-duration: 3s;
+  opacity: 1;
+  -webkit-transition: opacity 2s linear;
 }

@@ -7,7 +7,8 @@ void main() {
 }
 
 onSuccess() {
-  success.classes.add("b");
+  success.classes..remove("out")
+                 ..add("in");
 }
 
 Element get success => query("#success");
