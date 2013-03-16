@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
     
@@ -9,7 +11,7 @@
                 <meta name="description" content="">
                     <meta name="author" content="">
                         <!-- Le styles -->
-						<link rel="stylesheet" href="image2css.css">
+            <link rel="stylesheet" href="image2css.css">
                         <link href="../bootstrap/css/bootstrap.css" rel="stylesheet">
                             <style>
                                 body { padding-top: 60px; /* 60px to make the container go all the way
@@ -24,24 +26,32 @@
     </head>
     <body>
         <div class="container">
-			<h1>
-				Load BMP Image in Css
-			</h1>
-			<p><a href="https://github.com/nfrancois/image2css">Source code</a></p>
-			<div class="hero-unit">
-                <div class="control-group">
-                    <label for="fileinput1">
-                        Choose your BMP file
-                    </label>
-                    <input id="imageInput" name="fileinput1" type="file" accept="image/bmp">
-                        </div>
-            </div>
-			<hr/>
-			<h1>Css Render</h1>
-			<div id="cssImage" class="cssImage">
-			</div>
-		</div>
-		
+      <h1>
+        Load BMP Image in Css
+      </h1>
+      <p><a href="https://github.com/nfrancois/image2css">Source code</a></p>
+      <div class="hero-unit">
+        <div class="control-group">
+            <label for="fileinput1">
+                Choose your BMP file
+            </label>
+            <input id="imageInput" name="fileinput1" type="file" accept="image/bmp">
+        </div>
+        
+        <div class="control-group">
+            <label for="fileinput1">
+                Pixel size
+            </label>
+            <input id="pixelSizeInput" type="range" min="1" max="5" value="2">
+        </div>        
+        
+      </div>
+      <hr/>
+      <h1>Css Render</h1>
+      <div id="cssImage" class="cssImage">
+      </div>
+    </div>
+    
         <script type="application/dart" src="image2css.dart"></script>
         <script src="../browser/dart.js"></script>
         

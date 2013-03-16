@@ -3,21 +3,30 @@ import "dart:html";
 main(){
   var imageInput = query("#imageInput");
   var imageCss = query("#cssImage");
-  new Converter(imageInput, imageCss);
+  var pixelSizeInput = query("#pixelSizeInput");
+  new Converter(imageInput, pixelSizeInput, imageCss);
+  
 }
 
 class Converter {
   
-  FileReader reader = new FileReader();
-  Element imageInput;
-  Element imageCss;
+  final FileReader reader = new FileReader();
+  final FileUploadInputElement imageInput;
+  final InputElement pixelSizeInput;
+  final Element imageCss;
+  int _pixelSize;
   
-  Converter(this.imageInput, this.imageCss){
+  Converter(this.imageInput, this.pixelSizeInput, this.imageCss){
+    _pixelSize = int.parse(pixelSizeInput.value);
     _bind();
   }
   
   _bind(){
     imageInput.onChange.listen((e) => _loadFile());
+    pixelSizeInput.onChange.listen((e) {
+      _pixelSize = int.parse(pixelSizeInput.value);
+      _loadFile();
+    });
   }
   
   _loadFile(){
@@ -31,7 +40,7 @@ class Converter {
     var signature = _readSignature(array);
     try {
       var imageReader = ImageReader.fromSignature(signature);
-      var content = imageReader.read(array);
+      var content = imageReader.read(array, _pixelSize);
       _write(content);
     } on UnsupportedImageFormatException catch(uife){
       _unsupportedImageType();
@@ -52,6 +61,7 @@ class Converter {
   }
   
   _unsupportedImageType(){
+    // TODO pretty error message with bootstrap
     window.alert("Unsupported image type");
   }
   
@@ -62,10 +72,9 @@ abstract class ImageReader{
   
   static int BMP_HEADER = 0x424D;
   
-  String read(Uint8Array array);
+  String read(Uint8Array array, int pixelSize);
   
   static ImageReader fromSignature(int signature){
-    print(signature);
     if(signature == BMP_HEADER){
       return new BMPReader();
     }
@@ -82,7 +91,10 @@ class UnsupportedImageFormatException implements Exception {
 /// Image reader for BMP files
 class BMPReader extends ImageReader {
   
-  String read(Uint8Array array){
+  int _pixelSize;
+  
+  String read(Uint8Array array, int pixelSize){
+    _pixelSize = pixelSize;
     var width = _readInt(array.getRange(18, 4));
     var height = _readInt(array.getRange(22, 4));
     var current = 54;
@@ -94,7 +106,7 @@ class BMPReader extends ImageReader {
         var color = _readColor(array.getRange(current, 3));
         current+=3;
         pixelCount++;
-        outBuffer.write("${x*2}px ${y*2}px 2px 2px $color");
+        outBuffer.write("${x*_pixelSize}px ${y*_pixelSize}px ${_pixelSize}px ${_pixelSize}px $color");
         if(pixelCount != pixelNbr) {
           outBuffer.write(",");
         }

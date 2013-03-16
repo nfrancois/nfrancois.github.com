@@ -709,6 +709,12 @@ $$.JSInt = {"": "JSNumber;", $is$int: true, $isnum: true,
   }
 };
 
+$$.JSDouble = {"": "JSNumber;", $is$double: true, $isnum: true,
+  $eq: function(receiver, a) {
+    return receiver === a;
+  }
+};
+
 $$.JSString = {"": "Object;",
   codeUnitAt$1: function(receiver, index) {
     if (index < 0)
@@ -747,6 +753,9 @@ $$.JSString = {"": "Object;",
   },
   substring$1: function($receiver, startIndex) {
     return this.substring$2($receiver, startIndex, null);
+  },
+  toLowerCase$0: function(receiver) {
+    return receiver.toLowerCase();
   },
   get$isEmpty: function(receiver) {
     return receiver.length === 0;
@@ -3563,16 +3572,17 @@ $$._SkipStream = {"": "_ForwardingStream;_remaining,_source",
   }
 };
 
-$$.Converter = {"": "Object;reader>,imageInput,imageCss",
+$$.Converter = {"": "Object;reader>,imageInput,pixelSizeInput>,imageCss,_pixelSize<",
   _bind$0: function() {
     this.imageInput.get$onChange().listen$1(new $.Converter__bind_anon(this));
+    this.pixelSizeInput.get$onChange().listen$1(new $.Converter__bind_anon0(this));
   },
   _loadFile$0: function() {
     var imageFile, t1;
     imageFile = $.$$index$as(this.imageInput.get$files(), 0);
     t1 = this.reader;
     t1.get$onLoad().listen$1(new $.Converter__loadFile_anon(this));
-    t1.readAsArrayBuffer$1(imageFile);
+    t1.readAsArrayBuffer(imageFile);
   },
   _readFile$1: function(buffer) {
     var array, signature, imageReader, $content, exception, t1;
@@ -3580,7 +3590,7 @@ $$.Converter = {"": "Object;reader>,imageInput,imageCss",
     signature = this._readSignature$1(array);
     try {
       imageReader = $.ImageReader_fromSignature(signature);
-      $content = imageReader.read$1(array);
+      $content = imageReader.read$2(array, this._pixelSize);
       this.imageCss.get$style().set$boxShadow($content);
     } catch (exception) {
       t1 = $.unwrapException(exception);
@@ -3606,7 +3616,8 @@ $$.Converter = {"": "Object;reader>,imageInput,imageCss",
       signature0 = (signature << 8 >>> 0) + $.$$and$n(t1.$index(imageHeader, i), 255);
     return signature;
   },
-  Converter$2: function(imageInput, imageCss) {
+  Converter$3: function(imageInput, pixelSizeInput, imageCss) {
+    this._pixelSize = $.int_parse(this.pixelSizeInput.get$value(), null, null);
     this._bind$0();
   }
 };
@@ -3615,20 +3626,28 @@ $$.ImageReader = {"": "Object;"};
 
 $$.UnsupportedImageFormatException = {"": "Object;", $isUnsupportedImageFormatException: true, $isException: true};
 
-$$.BMPReader = {"": "ImageReader;",
-  read$1: function(array) {
-    var t1, width, height, pixelNbr, outBuffer, y, current, pixelCount, t2, x, color;
+$$.BMPReader = {"": "ImageReader;_pixelSize<",
+  read$2: function(array, pixelSize) {
+    var t1, width, height, pixelNbr, outBuffer, y, current, pixelCount, x, color, t2, t3, t4;
+    this._pixelSize = pixelSize;
     t1 = $.getInterceptor$a(array);
     width = this._readInt$1(t1.getRange$2(array, 18, 4));
     height = this._readInt$1(t1.getRange$2(array, 22, 4));
     pixelNbr = height * width;
     outBuffer = $.StringBuffer$("");
     for (y = height - 1, current = 54, pixelCount = 0; y >= 0; --y)
-      for (t2 = y * 2, x = 0; x < width; ++x) {
+      for (x = 0; x < width; ++x) {
         color = this._readColor$1(t1.getRange$2(array, current, 3));
         current += 3;
         ++pixelCount;
-        outBuffer.write$1($.S(x * 2) + "px " + $.S(t2) + "px 2px 2px " + color);
+        t2 = this._pixelSize;
+        if (typeof t2 !== "number")
+          throw $.iae(t2);
+        t3 = $.S(x * t2) + "px ";
+        t4 = this._pixelSize;
+        if (typeof t4 !== "number")
+          throw $.iae(t4);
+        outBuffer.write$1(t3 + $.S(y * t4) + "px " + $.S(this._pixelSize) + "px " + $.S(this._pixelSize) + "px " + color);
         if (pixelCount !== pixelNbr)
           outBuffer.write$1(",");
       }
@@ -3780,12 +3799,6 @@ $$.FixedSizeListIterator = {"": "Object;_array,_liblib$_length,_position,_liblib
   }
 };
 
-$$.Converter__bind_anon = {"": "Closure;this_0",
-  call$1: function(e) {
-    return this.this_0._loadFile$0();
-  }
-};
-
 $$._EventLoop__runHelper_next = {"": "Closure;this_0",
   call$0: function() {
     if (!this.this_0.runIteration$0())
@@ -3797,25 +3810,6 @@ $$._EventLoop__runHelper_next = {"": "Closure;this_0",
 $$._waitForPendingPorts_anon = {"": "Closure;callback_0",
   call$1: function(_) {
     return this.callback_0.call$0();
-  }
-};
-
-$$._FutureImpl__handleValue_anon = {"": "Closure;thenFuture_0,value_1",
-  call$0: function() {
-    this.thenFuture_0._sendValue$1(this.value_1);
-  }
-};
-
-$$.Stream_length_anon = {"": "Closure;box_0",
-  call$1: function(_) {
-    var t1 = this.box_0;
-    t1.count_0 = $.$$add$n(t1.count_0, 1);
-  }
-};
-
-$$.Stream_length_anon0 = {"": "Closure;box_0,future_1",
-  call$0: function() {
-    this.future_1._liblib0$_setValue$1(this.box_0.count_0);
   }
 };
 
@@ -3836,6 +3830,18 @@ $$.AsyncError_throwDelayed_anon = {"": "Closure;this_1,reportError_2",
   }
 };
 
+$$.Stream_toList_anon = {"": "Closure;result_0",
+  call$1: function(data) {
+    $.add$1$a(this.result_0, data);
+  }
+};
+
+$$.Stream_toList_anon0 = {"": "Closure;result_1,future_2",
+  call$0: function() {
+    this.future_2._liblib0$_setValue$1(this.result_1);
+  }
+};
+
 $$.LinkedHashMap_addAll_anon = {"": "Closure;this_0",
   call$2: function(key, value) {
     var t1, offset;
@@ -3843,6 +3849,19 @@ $$.LinkedHashMap_addAll_anon = {"": "Closure;this_0",
     offset = t1.get$_hashTable()._put$1(key);
     t1.get$_hashTable()._setValue$2(offset, value);
     t1.get$_hashTable()._checkCapacity$0();
+  }
+};
+
+$$.Stream_length_anon = {"": "Closure;box_0",
+  call$1: function(_) {
+    var t1 = this.box_0;
+    t1.count_0 = $.$$add$n(t1.count_0, 1);
+  }
+};
+
+$$.Stream_length_anon0 = {"": "Closure;box_0,future_1",
+  call$0: function() {
+    this.future_1._liblib0$_setValue$1(this.box_0.count_0);
   }
 };
 
@@ -3856,28 +3875,16 @@ $$.HashMap_addAll_anon = {"": "Closure;this_0",
   }
 };
 
-$$.Stream_toList_anon = {"": "Closure;result_0",
-  call$1: function(data) {
-    $.add$1$a(this.result_0, data);
-  }
-};
-
-$$.Stream_toList_anon0 = {"": "Closure;result_1,future_2",
+$$._FutureImpl__handleValue_anon = {"": "Closure;thenFuture_0,value_1",
   call$0: function() {
-    this.future_2._liblib0$_setValue$1(this.result_1);
+    this.thenFuture_0._sendValue$1(this.value_1);
   }
 };
 
 $$.Converter__loadFile_anon = {"": "Closure;this_0",
   call$1: function(e) {
     var t1 = this.this_0;
-    return t1._readFile$1(t1.get$reader().get$result());
-  }
-};
-
-$$._PendingSendPortFinder_visitList_anon = {"": "Closure;this_0",
-  call$1: function(e) {
-    return this.this_0._dispatch$1(e);
+    return t1._readFile$1(t1.get$reader().result);
   }
 };
 
@@ -3894,6 +3901,26 @@ $$.Stream_isEmpty_anon0 = {"": "Closure;future_2",
   }
 };
 
+$$._PendingSendPortFinder_visitList_anon = {"": "Closure;this_0",
+  call$1: function(e) {
+    return this.this_0._dispatch$1(e);
+  }
+};
+
+$$.Converter__bind_anon = {"": "Closure;this_0",
+  call$1: function(e) {
+    return this.this_0._loadFile$0();
+  }
+};
+
+$$.Converter__bind_anon0 = {"": "Closure;this_1",
+  call$1: function(e) {
+    var t1 = this.this_1;
+    t1.set$_pixelSize($.int_parse(t1.get$pixelSizeInput().get$value(), null, null));
+    t1._loadFile$0();
+  }
+};
+
 $$._PendingSendPortFinder_visitMap_anon = {"": "Closure;this_0",
   call$1: function(e) {
     return this.this_0._dispatch$1(e);
@@ -3903,18 +3930,6 @@ $$._PendingSendPortFinder_visitMap_anon = {"": "Closure;this_0",
 $$._FutureImpl__handleError_anon = {"": "Closure;error_0,errorFuture_1",
   call$0: function() {
     this.errorFuture_1._sendError$1(this.error_0);
-  }
-};
-
-$$._BaseSendPort_call_anon = {"": "Closure;completer_0,port_1",
-  call$2: function(value, ignoreReplyTo) {
-    var t1;
-    this.port_1.close$0();
-    t1 = this.completer_0;
-    if (typeof value === "object" && value !== null && !!value.$isException)
-      t1.completeError$1(value);
-    else
-      t1.complete$1(value);
   }
 };
 
@@ -3933,6 +3948,18 @@ $$.invokeClosure_anon0 = {"": "Closure;closure_1,arg1_2",
 $$.invokeClosure_anon1 = {"": "Closure;closure_3,arg1_4,arg2_5",
   call$0: function() {
     return this.closure_3.call$2(this.arg1_4, this.arg2_5);
+  }
+};
+
+$$._BaseSendPort_call_anon = {"": "Closure;completer_0,port_1",
+  call$2: function(value, ignoreReplyTo) {
+    var t1;
+    this.port_1.close$0();
+    t1 = this.completer_0;
+    if (typeof value === "object" && value !== null && !!value.$isException)
+      t1.completeError$1(value);
+    else
+      t1.complete$1(value);
   }
 };
 
@@ -4575,6 +4602,50 @@ $.Primitives_printString = function(string) {
     return;
   }
   throw "Unable to print message: " + String(string);
+};
+
+$.Primitives__throwFormatException = function(string) {
+  throw $.$$throw($.FormatException$(string));
+};
+
+$.Primitives_parseInt = function(source, radix, handleError) {
+  var match, t1, maxCharCode, digitsPart, i;
+  if (handleError == null)
+    handleError = $.Primitives__throwFormatException;
+  $.checkString(source);
+  match = /^\s*[+-]?((0x[a-f0-9]+)|(\d+)|([a-z0-9]+))\s*$/i.exec(source);
+  if (radix == null) {
+    t1 = $.getInterceptor(match);
+    if (match != null) {
+      if (t1.$index(match, 2) != null)
+        return parseInt(source, 16);
+      if (t1.$index(match, 3) != null)
+        return parseInt(source, 10);
+      return handleError.call$1(source);
+    }
+    radix = 10;
+  } else {
+    if (!(typeof radix === "number" && Math.floor(radix) === radix))
+      throw $.$$throw($.ArgumentError$("Radix is not an integer"));
+    if (radix < 2 || radix > 36)
+      throw $.$$throw($.RangeError$("Radix " + $.S(radix) + " not in range 2..36"));
+    t1 = $.getInterceptor(match);
+    if (match != null) {
+      if (radix === 10 && t1.$index(match, 3) != null)
+        return parseInt(source, 10);
+      if (radix < 10 || t1.$index(match, 3) == null) {
+        maxCharCode = radix <= 10 ? 48 + radix - 1 : 97 + radix - 10 - 1;
+        digitsPart = $.toLowerCase$0$s(t1.$index(match, 1));
+        for (i = 0; i < digitsPart.length; ++i)
+          if ($.CONSTANT.codeUnitAt$1(digitsPart, i) > maxCharCode)
+            return handleError.call$1(source);
+      }
+    }
+    radix = radix;
+  }
+  if (match == null)
+    return handleError.call$1(source);
+  return parseInt(source, radix);
 };
 
 $.Primitives_objectTypeName = function(object) {
@@ -5323,6 +5394,10 @@ $.IntegerDivisionByZeroException$ = function() {
   return new $.IntegerDivisionByZeroException();
 };
 
+$.int_parse = function(source, onError, radix) {
+  return $.Primitives_parseInt(source, radix, onError);
+};
+
 $.List_List = function($length) {
   var t1 = $ === $length;
   if (t1)
@@ -5438,19 +5513,20 @@ $._Isolate_port = function() {
 };
 
 $.main = function() {
-  $.Converter$(document.query$1("#imageInput"), document.query$1("#cssImage"));
+  var imageInput, imageCss;
+  imageInput = document.query$1("#imageInput");
+  imageCss = document.query$1("#cssImage");
+  $.Converter$(imageInput, document.query$1("#pixelSizeInput"), imageCss);
 };
 
-$.Converter$ = function(imageInput, imageCss) {
-  var t1 = new $.Converter($.FileReader_FileReader(), imageInput, imageCss);
-  t1.Converter$2(imageInput, imageCss);
+$.Converter$ = function(imageInput, pixelSizeInput, imageCss) {
+  var t1 = new $.Converter($.FileReader_FileReader(), imageInput, pixelSizeInput, imageCss, null);
+  t1.Converter$3(imageInput, pixelSizeInput, imageCss);
   return t1;
 };
 
 $.ImageReader_fromSignature = function(signature) {
-  var t1 = $.getInterceptor(signature);
-  $.Primitives_printString(t1.toString$0(signature));
-  if (t1.$eq(signature, $.ImageReader_BMP_HEADER) === true)
+  if ($.$$eq$o(signature, $.ImageReader_BMP_HEADER) === true)
     return $.BMPReader$();
   throw $.$$throw($.UnsupportedImageFormatException$());
 };
@@ -5460,11 +5536,13 @@ $.UnsupportedImageFormatException$ = function() {
 };
 
 $.BMPReader$ = function() {
-  return new $.BMPReader();
+  return new $.BMPReader(null);
 };
 
 $.IsolateNatives__processWorkerMessage.call$2 = $.IsolateNatives__processWorkerMessage;
 $.IsolateNatives__processWorkerMessage.$name = "IsolateNatives__processWorkerMessage";
+$.Primitives__throwFormatException.call$1 = $.Primitives__throwFormatException;
+$.Primitives__throwFormatException.$name = "Primitives__throwFormatException";
 $.$$throw.call$1 = $.$$throw;
 $.$$throw.$name = "$$throw";
 $.DartError_toStringWrapper.call$0 = $.DartError_toStringWrapper;
@@ -5643,6 +5721,9 @@ $.skip$1$a = function(receiver, a0) {
 $.toList$0$a = function(receiver) {
   return $.getInterceptor$a(receiver).toList$0(receiver);
 };
+$.toLowerCase$0$s = function(receiver) {
+  return $.getInterceptor$s(receiver).toLowerCase$0(receiver);
+};
 $.toRadixString$1$n = function(receiver, a0) {
   return $.getInterceptor$n(receiver).toRadixString$1(receiver, a0);
 };
@@ -5783,11 +5864,7 @@ $.$defineNativeClass("HTMLAnchorElement", {
   }
 });
 
-$.$defineNativeClass("HTMLBodyElement", {
-  get$onLoad: function() {
-    return $.CONSTANT2.forTarget$1(this);
-  }
-});
+$.$defineNativeClass("HTMLButtonElement", {"": "value>"});
 
 $.$defineNativeClass("CSSStyleDeclaration", {"": "length>",
   setProperty$3: function(propertyName, value, priority) {
@@ -5810,9 +5887,6 @@ $.$defineNativeClass("Document", {
   get$onChange: function() {
     return $.CONSTANT1.forTarget$1(this);
   },
-  get$onLoad: function() {
-    return $.CONSTANT2.forTarget$1(this);
-  },
   query$1: function(selectors) {
     if ($.RegExp_RegExp("^#[_a-zA-Z]\\w*$", true, false).hasMatch$1(selectors))
       return this.getElementById($.CONSTANT.substring$1(selectors, 1));
@@ -5829,12 +5903,6 @@ $.$defineNativeClass("DOMException", {
 $.$defineNativeClass("Element", {"": "id>,style>",
   get$onChange: function() {
     return $.CONSTANT1.forTarget$1(this);
-  },
-  get$onLoad: function() {
-    if (Object.getPrototypeOf(this).hasOwnProperty("get$onLoad")) {
-      return $.CONSTANT2.forTarget$1(this);
-    } else
-      return Object.prototype.get$onLoad.call(this);
   }
 });
 
@@ -5937,12 +6005,9 @@ $.$defineNativeClass("FileList", {
   }
 });
 
-$.$defineNativeClass("FileReader", {"": "error>,result>",
+$.$defineNativeClass("FileReader", {"": "error>",
   $$dom_addEventListener$3: function(type, listener, useCapture) {
     return this.addEventListener(type,$.convertDartClosureToJS(listener, 1),useCapture);
-  },
-  readAsArrayBuffer$1: function(blob) {
-    return this.readAsArrayBuffer(blob);
   },
   $$dom_removeEventListener$3: function(type, listener, useCapture) {
     return this.removeEventListener(type,$.convertDartClosureToJS(listener, 1),useCapture);
@@ -5970,11 +6035,15 @@ $.$defineNativeClass("HTMLImageElement", {
   }
 });
 
-$.$defineNativeClass("HTMLInputElement", {"": "files>"});
+$.$defineNativeClass("HTMLInputElement", {"": "files>,value>"});
+
+$.$defineNativeClass("HTMLLIElement", {"": "value>"});
 
 $.$defineNativeClass("HTMLMediaElement", {"": "error>"});
 
 $.$defineNativeClass("MessageEvent", {"": "ports>"});
+
+$.$defineNativeClass("HTMLMeterElement", {"": "value>"});
 
 $.$defineNativeClass("Node", {
   $$dom_addEventListener$3: function(type, listener, useCapture) {
@@ -5985,19 +6054,27 @@ $.$defineNativeClass("Node", {
   }
 });
 
+$.$defineNativeClass("HTMLOptionElement", {"": "value>"});
+
+$.$defineNativeClass("HTMLOutputElement", {"": "value>"});
+
+$.$defineNativeClass("HTMLParamElement", {"": "value>"});
+
+$.$defineNativeClass("HTMLProgressElement", {"": "value>"});
+
 $.$defineNativeClass("RangeException", {
   toString$0: function(_) {
     return this.toString();
   }
 });
 
-$.$defineNativeClass("HTMLSelectElement", {"": "length>"});
+$.$defineNativeClass("HTMLSelectElement", {"": "length>,value>"});
 
 $.$defineNativeClass("SpeechRecognitionError", {"": "error>"});
 
-$.$defineNativeClass("SpeechRecognitionEvent", {"": "result>"});
-
 $.$defineNativeClass("SpeechRecognitionResult", {"": "length>"});
+
+$.$defineNativeClass("HTMLTextAreaElement", {"": "value>"});
 
 $.$defineNativeClass("Uint8Array", {
   get$length: function(_) {
@@ -6197,9 +6274,6 @@ $.$defineNativeClass("DOMWindow", {
   },
   get$onChange: function() {
     return $.CONSTANT1.forTarget$1(this);
-  },
-  get$onLoad: function() {
-    return $.CONSTANT2.forTarget$1(this);
   }
 });
 
@@ -6208,38 +6282,6 @@ $.$defineNativeClass("XPathException", {
     return this.toString();
   }
 });
-
-$.$defineNativeClass("SVGFEBlendElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFEColorMatrixElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFEComponentTransferElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFECompositeElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFEConvolveMatrixElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFEDiffuseLightingElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFEDisplacementMapElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFEFloodElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFEGaussianBlurElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFEImageElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFEMergeElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFEMorphologyElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFEOffsetElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFESpecularLightingElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFETileElement", {"": "result>"});
-
-$.$defineNativeClass("SVGFETurbulenceElement", {"": "result>"});
 
 $.$defineNativeClass("SVGElement", {
   get$id: function() {
@@ -6253,10 +6295,8 @@ $.$defineNativeClass("SVGException", {
   }
 });
 
-$.$defineNativeClass("SVGFEDropShadowElement", {"": "result>"});
-
-// 47 dynamic classes.
-// 181 classes
+// 36 dynamic classes.
+// 180 classes
 // 13 !leaf
 (function() {
   var v0_MediaElement = "HTMLMediaElement|HTMLVideoElement|HTMLAudioElement", v1_SvgElement = "SVGElement|SVGStyledElement|SVGAElement|SVGTextContentElement|SVGTextPositioningElement|SVGAltGlyphElement|SVGTSpanElement|SVGTextElement|SVGTRefElement|SVGTextPathElement|SVGCircleElement|SVGClipPathElement|SVGDefsElement|SVGDescElement|SVGEllipseElement|SVGFEBlendElement|SVGFEColorMatrixElement|SVGFEComponentTransferElement|SVGFECompositeElement|SVGFEConvolveMatrixElement|SVGFEDiffuseLightingElement|SVGFEDisplacementMapElement|SVGFEFloodElement|SVGFEGaussianBlurElement|SVGFEImageElement|SVGFEMergeElement|SVGFEMorphologyElement|SVGFEOffsetElement|SVGFESpecularLightingElement|SVGFETileElement|SVGFETurbulenceElement|SVGFilterElement|SVGForeignObjectElement|SVGImageElement|SVGLineElement|SVGGradientElement|SVGLinearGradientElement|SVGRadialGradientElement|SVGMarkerElement|SVGPathElement|SVGMaskElement|SVGGElement|SVGPatternElement|SVGPolygonElement|SVGPolylineElement|SVGRectElement|SVGSVGElement|SVGSymbolElement|SVGStopElement|SVGSwitchElement|SVGUseElement|SVGTitleElement|SVGFEDropShadowElement|SVGGlyphRefElement|SVGMissingGlyphElement|SVGAnimationElement|SVGAnimateElement|SVGAnimateMotionElement|SVGAnimateTransformElement|SVGSetElement|SVGAnimateColorElement|SVGFEDistantLightElement|SVGComponentTransferFunctionElement|SVGFEFuncAElement|SVGFEFuncBElement|SVGFEFuncGElement|SVGFEFuncRElement|SVGFEMergeNodeElement|SVGFEPointLightElement|SVGFESpotLightElement|SVGMetadataElement|SVGScriptElement|SVGStyleElement|SVGViewElement|SVGAltGlyphDefElement|SVGAltGlyphItemElement|SVGCursorElement|SVGFontElement|SVGFontFaceFormatElement|SVGFontFaceElement|SVGFontFaceSrcElement|SVGGlyphElement|SVGFontFaceUriElement|SVGFontFaceNameElement|SVGHKernElement|SVGMPathElement|SVGVKernElement", v2_Element = [v0_MediaElement, v1_SvgElement, "Element|HTMLOptionElement|HTMLOutputElement|HTMLParagraphElement|HTMLParamElement|HTMLPreElement|HTMLProgressElement|HTMLQuoteElement|HTMLScriptElement|HTMLSelectElement|HTMLShadowElement|HTMLSourceElement|HTMLSpanElement|HTMLStyleElement|HTMLTableCaptionElement|HTMLTableCellElement|HTMLTableColElement|HTMLTableElement|HTMLTableRowElement|HTMLTableSectionElement|HTMLTextAreaElement|HTMLTitleElement|HTMLTrackElement|HTMLUListElement|HTMLUnknownElement|HTMLAppletElement|HTMLBaseFontElement|HTMLDirectoryElement|HTMLFontElement|HTMLFrameElement|HTMLFrameSetElement|HTMLMarqueeElement|HTMLElement|HTMLAnchorElement|HTMLAreaElement|HTMLBRElement|HTMLBaseElement|HTMLBodyElement|HTMLButtonElement|HTMLCanvasElement|HTMLContentElement|HTMLDListElement|HTMLDataListElement|HTMLDetailsElement|HTMLDivElement|HTMLEmbedElement|HTMLFieldSetElement|HTMLFormElement|HTMLHRElement|HTMLHeadElement|HTMLHeadingElement|HTMLHtmlElement|HTMLIFrameElement|HTMLImageElement|HTMLInputElement|HTMLKeygenElement|HTMLLIElement|HTMLLabelElement|HTMLLegendElement|HTMLLinkElement|HTMLMapElement|HTMLMenuElement|HTMLMetaElement|HTMLMeterElement|HTMLModElement|HTMLOListElement|HTMLObjectElement|HTMLOptGroupElement"].join("|"), v3_Document = "Document|SVGDocument|HTMLDocument", v4_Node = [v2_Element, v3_Document, "Node"].join("|");
