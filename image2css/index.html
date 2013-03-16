@@ -1,19 +1,50 @@
 <!DOCTYPE html>
-
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>image2css</title>
-    <link rel="stylesheet" href="image2css.css">
-  </head>
-  <body>
-    <h1>Image to css</h1>
+<html lang="en">
     
-    <input id="imageInput" type="file" />
-    
-    <div id="cssImage" class="cssImage" />
-
-    <script type="application/dart" src="image2css.dart"></script>
-    <script src="../browser/dart.js"></script>
-  </body>
+    <head>
+        <meta charset="utf-8">
+            <title>Image to css
+            </title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta name="description" content="">
+                    <meta name="author" content="">
+                        <!-- Le styles -->
+						<link rel="stylesheet" href="image2css.css">
+                        <link href="../bootstrap/css/bootstrap.css" rel="stylesheet">
+                            <style>
+                                body { padding-top: 60px; /* 60px to make the container go all the way
+                                                           to the bottom of the topbar */ }
+                            </style>
+                            <link href="../bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+                                <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+                                <!--[if lt IE 9]>
+                                 <script src="http://html5shim.googlecode.com/svn/trunk/html5.js">
+                                 </script>
+                                 <![endif]-->
+    </head>
+    <body>
+        <div class="container">
+			<h1>
+				Load BMP Image in Css
+			</h1>
+			<p><a href="https://github.com/nfrancois/image2css">Source code</a></p>
+			<div class="hero-unit">
+                <div class="control-group">
+                    <label for="fileinput1">
+                        Choose your BMP file
+                    </label>
+                    <input id="imageInput" name="fileinput1" type="file" accept="image/bmp">
+                        </div>
+            </div>
+			<hr/>
+			<h1>Css Render</h1>
+			<div id="cssImage" class="cssImage">
+			</div>
+		</div>
+		
+        <script type="application/dart" src="image2css.dart"></script>
+        <script src="../browser/dart.js"></script>
+        
+        
+    </body>
 </html>
