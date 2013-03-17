@@ -1,0 +1,14 @@
+.snow-view {
+  position: absolute;  
+}
+
+.content {
+  height: 480px;
+}
+
+#github {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 0;
+}
