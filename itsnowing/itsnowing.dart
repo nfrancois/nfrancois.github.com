@@ -3,19 +3,41 @@ import 'dart:math';
 
 
 void main() {
-  CanvasElement canvas = query("#canvas-snow");
-  CanvasRenderingContext2D ctx = canvas.getContext("2d");
+  CanvasElement canvas = query("#canvasSnow");
   InputElement flakesRange =  query("#flakesRange");
+  ButtonElement takePhoto = query("#takePhoto");
+  VideoElement video = query('#webcam');
+  CanvasElement photoBuffer = query("#photoBuffer");
+  
+  var photoContent = query("#photoContent");
   var content = query("#content");
   var acceptVideo = query("#acceptVideo");
-  var snow = new Snow(ctx, canvas.width, canvas.height, int.parse(flakesRange.value));
+  
+  takePhoto.onClick.listen((e) {
+    var previousImage = photoContent.query("img");
+    if(previousImage != null){
+      previousImage.remove();
+    }
+    
+    CanvasRenderingContext2D photoContext = photoBuffer.getContext("2d");
+    photoContext.drawImage(video, 0, 0, video.width, video.height);
+    photoContext.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+    var data = photoBuffer.toDataUrl("image/png");
+    ImageElement photo = new Element.tag("img");
+    photoContent.append(photo);
+    photo..height = canvas.height~/2
+         ..width = canvas.width~/2
+         ..src = data;
+  });
+  var snow = new Snow(canvas.getContext("2d"), canvas.width, canvas.height, int.parse(flakesRange.value));
   flakesRange.onChange.listen((e) => snow.numberOfFlake = int.parse(flakesRange.value));
-  var video = query('#webcam') as VideoElement;
   
   window.navigator.getUserMedia(video: true).then((stream) {
     video
     ..autoplay = true
     ..src = Url.createObjectUrl(stream)
+    ..onError.listen((e) => window.alert("e"))
+    ..onLoadStart
     ..onLoadedMetadata.listen((e) {
       acceptVideo.classes.add("invisible");
       content.classes.remove("invisible");
@@ -27,7 +49,7 @@ void main() {
 
 class Snow {
  
-  int numberOfFlake = 50;
+  int numberOfFlake;
   final CanvasRenderingContext2D ctx;
   final int width;
   final int heigth;
@@ -61,8 +83,8 @@ class Snow {
   draw(){
     ctx.clearRect(0, 0, width, heigth);
     for(Flake flake in flakes){
-      flake.draw(ctx);
-      flake.updatePosition();
+      flake..draw(ctx)
+           ..updatePosition();
     }
     // Remove unvisible flakes and recreate new
     flakes.removeMatching((Flake flake)  => flake.y > heigth || flake.y > heigth);

@@ -1,9 +1,13 @@
 .snow-view {
-  position: absolute;  
+  position: absolute;
 }
 
 .content {
   height: 480px;
+}
+
+.photoContent {
+  margin-top: 25px;
 }
 
 #github {

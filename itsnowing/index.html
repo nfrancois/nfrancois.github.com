@@ -35,16 +35,20 @@
     <div id="content" class="well content invisible">
       <div class="span7">
         <video id="webcam" class="snow-view" width="640" height="480"></video>
-        <canvas id="canvas-snow" class="snow-view" width="640" height="480"></canvas>
+        <canvas id="canvasSnow" class="snow-view" width="640" height="480"></canvas>
+        <canvas id="photoBuffer" class="invisible" width="640" height="480"></canvas>
       </div>
       <div class="span3">
         <div class="control-group">
-        <label for="flakesRange">Flakes</label>
-        <input id="flakesRange" type="range" min="25" max="250" value="50">
+          <label for="flakesRange">Flakes</label>
+          <input id="flakesRange" type="range" min="25" max="250" value="50">
         </div>
+        <button id="takePhoto" class="btn btn-success">Take photo</button>
+        <div id="photoContent" class="span3 photoContent">
+          
+        </div> 
         </div>
       </div>
-    </div>
 
     <script type="application/dart" src="itsnowing.dart"></script>
     <script src="../browser/dart.js"></script>
