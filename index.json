@@ -1,0 +1,19 @@
+{
+    "firstname":"Nicolas",
+    "lastname":"François",
+    "job": "Backend developper",
+    "profiles" : [
+        {
+            "ref": "github",
+            "href": "https://github.com/nfrancois/"
+        },
+        {
+            "ref": "twitter",
+            "href": "https://twitter.com/nicofrancois"
+        },
+        {
+            "ref": "g+",
+            "href": "https://plus.google.com/+NicolasFrancois"
+        }
+    ]
+}
