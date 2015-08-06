@@ -1,7 +1,20 @@
 {
-    "firstname":"Nicolas",
-    "lastname":"François",
-    "job": "Backend developper",
+    "identity": {
+        "firstname":"Nicolas",
+        "lastname":"François",
+        "fullname" : "Nicolas François"
+        "img": "http://www.gravatar.com/avatar/0cae4b1a93168c4f183395f396c2437d?s=200"
+    },
+    "job": {
+        "title": "Backend developper",
+        "company" : {
+            "ref": "Sfeir",
+            "href": "http://www.sfeir.com"
+        }
+    },
+    "projects": [
+
+     ],
     "profiles" : [
         {
             "ref": "github",
@@ -15,5 +28,5 @@
             "ref": "g+",
             "href": "https://plus.google.com/+NicolasFrancois"
         }
-    ]
+    ]"
 }
