@@ -2,13 +2,12 @@
     "identity": {
         "firstname":"Nicolas",
         "lastname":"François",
-        "fullname" : "Nicolas François"
         "img": "http://www.gravatar.com/avatar/0cae4b1a93168c4f183395f396c2437d?s=200"
     },
     "job": {
         "title": "Backend developper",
         "company" : {
-            "ref": "Sfeir",
+            "rel": "Sfeir",
             "href": "http://www.sfeir.com"
         }
     },
@@ -17,16 +16,24 @@
      ],
     "profiles" : [
         {
-            "ref": "github",
+            "rel": "github",
             "href": "https://github.com/nfrancois/"
         },
         {
-            "ref": "twitter",
+            "rel": "twitter",
             "href": "https://twitter.com/nicofrancois"
         },
         {
-            "ref": "g+",
+            "rel": "g+",
             "href": "https://plus.google.com/+NicolasFrancois"
+        },
+        {
+            "rel":"My blog",
+            "href": "http://injectinto.blogspot.fr/"
+        },
+        {
+            "rel": "Slideshare",
+            "http": "http://www.slideshare.net/nicofrancois"
         }
-    ]"
+    ]
 }
