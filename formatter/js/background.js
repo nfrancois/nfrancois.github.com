@@ -408,6 +408,14 @@
           exitedNotJsonTime = +(new Date()) ;
           break ;
           
+        case 'LOADING_FAIL':
+          
+          break;
+          
+        case 'LOADING':
+          
+          break;
+          
         case 'FORMATTING' :
           isJsonTime = +(new Date()) ;
 
@@ -605,18 +613,22 @@
     jfContent.id = 'jfContent';
     document.body.appendChild(jfContent);
     
-    // Do formatting
-    render(['FORMATTING']) ;    
-
+    // Do loading
+    render(['LOADING']) ;    
     
     // GET document
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", jsonDoc(), true);
     xmlhttp.onreadystatechange = function () {
-      if (xmlhttp.readyState != 4 || xmlhttp.status != 200) return;
-      var obj = JSON.parse(xmlhttp.responseText);
-      var html = jsonObjToHTML(obj) ;
-      render(['FORMATTED', html]) ;
+      if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        // Do formatting
+        render(['FORMATTING']) ;  
+        var obj = JSON.parse(xmlhttp.responseText);
+        var html = jsonObjToHTML(obj) ;
+        render(['FORMATTED', html]) ;
+      } else {
+        render(['LOADING_FAIL']);
+      }
     };
     xmlhttp.send();
 
