@@ -611,7 +611,7 @@
     
     // GET document
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("GET", "/index.json", true);
+    xmlhttp.open("GET", jsonDoc(), true);
     xmlhttp.onreadystatechange = function () {
       if (xmlhttp.readyState != 4 || xmlhttp.status != 200) return;
       var obj = JSON.parse(xmlhttp.responseText);
@@ -620,6 +620,12 @@
     };
     xmlhttp.send();
 
+  }
+  
+  function jsonDoc() {
+    var hash = window.location.hash;
+    var doc = (hash.length > 1) ? hash.substring(1) : "index";
+    return doc+".json";
   }
   
     
