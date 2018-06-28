@@ -5,10 +5,10 @@
         "img": "http://www.gravatar.com/avatar/0cae4b1a93168c4f183395f396c2437d?s=200"
     },
     "job": {
-        "title": "Backend developper",
+        "title": "Data engineer",
         "company" : {
-            "rel": "Sfeir",
-            "href": "http://www.sfeir.com"
+            "rel": "Influans",
+            "href": "http://www.influans.com"
         }
     },
     "projects": [
